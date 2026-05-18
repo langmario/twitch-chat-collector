@@ -1,8 +1,11 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:4-24-trixie",
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
     "ghcr.io/devcontainers-extra/features/pnpm:2": {}
   },
+  "forwardPorts": [9000],
   "customizations": {
     "vscode": {
       "extensions": ["oxc.oxc-vscode", "EditorConfig.EditorConfig"]
