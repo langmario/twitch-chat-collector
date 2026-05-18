@@ -1,10 +1,12 @@
 import { Sender } from '@questdb/nodejs-client';
-import { ChatClient } from '@twurple/chat';
+import { ChatClient, ChatMessage } from '@twurple/chat';
 
 import { getEmotes, getTags } from './messages.js';
 
-const conf = 'http::addr=localhost:9000;username=admin;password=quest;';
+const conf =
+  'http::addr=localhost:9000;username=admin;password=quest;auto_flush_rows=100;auto_flush_interval=1000;';
 const sender = await Sender.fromConfig(conf);
+console.log('DB sender connected');
 
 const chatClient = new ChatClient({
   channels: [
@@ -21,12 +23,12 @@ const chatClient = new ChatClient({
     'pietsmiet',
     'dhalucard',
     'sterzig',
+    'handofblood',
   ],
   readOnly: true,
 });
 
-chatClient.onConnect(() => console.log('Client connected'));
-chatClient.onMessage(async (channel, user, text, msg) => {
+async function handleMessage(channel: string, user: string, text: string, msg: ChatMessage) {
   const timestamp = msg.date.getTime();
   const usedEmotes = getEmotes(text, msg.emoteOffsets);
   const tags = getTags(msg.tags);
@@ -52,7 +54,20 @@ chatClient.onMessage(async (channel, user, text, msg) => {
       .intColumn('count', emote.count)
       .at(timestamp, 'ms');
   }
-  await sender.flush();
-});
+}
+
+chatClient.onConnect(() => console.log('Client connected'));
+chatClient.onMessage(handleMessage);
 
 chatClient.connect();
+
+async function stop() {
+  chatClient.quit();
+  await sender.flush();
+  await sender.close();
+  console.log('DB sender disconnected');
+  process.exit(0);
+}
+
+process.on('SIGINT', stop);
+process.on('SIGTERM', stop);

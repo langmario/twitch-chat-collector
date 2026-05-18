@@ -10,7 +10,8 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "build": "tsc",
-    "dev": "tsx --watch src/index.ts"
+    "dev": "tsx src/index.ts",
+    "dev:watch": "tsx --watch src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^25.8.0",
