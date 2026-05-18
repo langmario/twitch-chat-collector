@@ -1,12 +1,24 @@
 import { Sender } from '@questdb/nodejs-client';
 import { ChatClient, ChatMessage } from '@twurple/chat';
+import pino from 'pino';
 
 import { getEmotes, getTags } from './messages.js';
 
+const logger = pino({
+  level: process.env.PINO_LOG_LEVEL || 'debug',
+  timestamp: pino.stdTimeFunctions.isoTime,
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+    },
+  },
+});
+
 const conf =
   'http::addr=localhost:9000;username=admin;password=quest;auto_flush_rows=100;auto_flush_interval=1000;';
-const sender = await Sender.fromConfig(conf);
-console.log('DB sender connected');
+const sender = await Sender.fromConfig(conf, { log: (level, message) => logger[level](message) });
+logger.info('db sender connected');
 
 const chatClient = new ChatClient({
   channels: [
@@ -20,6 +32,10 @@ const chatClient = new ChatClient({
     'dieservincentg',
     'ronnyberger',
     'knirpz',
+    'lostkittn',
+    'yvraldis',
+    'staiy',
+    'junicats',
     'pietsmiet',
     'dhalucard',
     'sterzig',
@@ -56,18 +72,22 @@ async function handleMessage(channel: string, user: string, text: string, msg: C
   }
 }
 
-chatClient.onConnect(() => console.log('Client connected'));
+chatClient.onConnect(() => logger.info('twitch chat connected'));
 chatClient.onMessage(handleMessage);
 
-chatClient.connect();
-
 async function stop() {
-  chatClient.quit();
-  await sender.flush();
-  await sender.close();
-  console.log('DB sender disconnected');
-  process.exit(0);
+  try {
+    chatClient.quit();
+    await sender.flush();
+    await sender.close();
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 }
 
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
+
+chatClient.connect();
