@@ -10,8 +10,8 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "dev:watch": "tsx --watch src/index.ts"
+    "dev": "tsx --env-file=.env src/index.ts",
+    "dev:watch": "tsx --env-file=.env --watch src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^25.8.0",
@@ -25,6 +25,7 @@
     "@twurple/auth": "^8.1.4",
     "@twurple/chat": "^8.1.4",
     "dotenv": "^17.4.2",
+    "envalid": "^8.1.1",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3"
   }

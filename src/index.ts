@@ -2,10 +2,11 @@ import { Sender } from '@questdb/nodejs-client';
 import { ChatClient, ChatMessage } from '@twurple/chat';
 import pino from 'pino';
 
+import { env } from './env.js';
 import { getEmotes, getTags } from './messages.js';
 
 const logger = pino({
-  level: process.env.PINO_LOG_LEVEL || 'debug',
+  level: env.PINO_LOG_LEVEL,
   timestamp: pino.stdTimeFunctions.isoTime,
   transport: {
     target: 'pino-pretty',
@@ -15,32 +16,19 @@ const logger = pino({
   },
 });
 
-const conf =
-  'http::addr=localhost:9000;username=admin;password=quest;auto_flush_rows=100;auto_flush_interval=1000;';
-const sender = await Sender.fromConfig(conf, { log: (level, message) => logger[level](message) });
+const sender = await Sender.fromConfig(env.DATABASE_URL, {
+  log: (level, message) => logger[level](message),
+});
 logger.info('db sender connected');
 
+const channels = env.CHANNELS.split(',').map((s) => s.trim());
+logger.info(channels, 'watching channels');
+
 const chatClient = new ChatClient({
-  channels: [
-    'baso',
-    'katazuri',
-    'haselnuuuss',
-    'primalavera',
-    'lillythechilly',
-    'bonjwa',
-    'mahluna',
-    'dieservincentg',
-    'ronnyberger',
-    'knirpz',
-    'lostkittn',
-    'yvraldis',
-    'staiy',
-    'junicats',
-    'pietsmiet',
-    'dhalucard',
-    'sterzig',
-    'handofblood',
-  ],
+  logger: {
+    custom: () => {},
+  },
+  channels: channels,
   readOnly: true,
 });
 
