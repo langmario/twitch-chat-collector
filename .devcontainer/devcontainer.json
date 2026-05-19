@@ -3,7 +3,13 @@
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
-    "ghcr.io/devcontainers-extra/features/pnpm:2": {}
+    "ghcr.io/devcontainers-extra/features/pnpm:2": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:3": {
+      "moby": false,
+      "version": "latest"
+    }
   },
   "forwardPorts": [9000],
   "customizations": {
