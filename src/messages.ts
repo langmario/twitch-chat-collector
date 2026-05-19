@@ -19,5 +19,6 @@ export function getTags(tags: Map<string, string>) {
     isSub: tags.get('subscriber') === '1',
     isTurbo: tags.get('turbo') === '1',
     isFirst: tags.get('first-msg') === '1',
+    isBot: tags.get('badges')?.includes('bot-badge/1') ?? false,
   };
 }

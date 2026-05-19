@@ -44,6 +44,7 @@ async function handleMessage(channel: string, user: string, text: string, msg: C
     .booleanColumn('is_sub', tags.isSub)
     .booleanColumn('is_first', tags.isFirst)
     .booleanColumn('is_turbo', tags.isTurbo)
+    .booleanColumn('is_bot', tags.isBot)
     .stringColumn('user_name', user)
     .stringColumn('msg', text)
     .at(timestamp, 'ms');
